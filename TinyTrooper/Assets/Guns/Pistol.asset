@@ -16,4 +16,7 @@ MonoBehaviour:
   BulletGravity: 0.5
   FireRate: 100
   Damage: 2
+  MaterialDamage: 2
   Penetration: 1
+  Sound: {fileID: 8300000, guid: eb9710ec06bcfd846a74209eacfd33ce, type: 3}
+  InfiniteAmmo: 1

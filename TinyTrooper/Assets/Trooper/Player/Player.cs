@@ -24,11 +24,17 @@ public class Player : MonoBehaviour
     private float gunTimer = 0;
     private Animator anim;
 
+    public float Health = 100;
+    public float maxHealth = 100;
+
+    private AudioSource audioSource;
+
     // Start is called before the first frame update
     void Start()
     {
         rb = GetComponent<Rigidbody>();
         anim = GetComponentInChildren<Animator>();
+        audioSource = GetComponent<AudioSource>();
         currentGun = 0;
     }
 
@@ -47,6 +53,10 @@ public class Player : MonoBehaviour
             bullet.transform.forward = transform.forward;
             bullet.Init(guns[currentGun]);
             gunTimer = Time.time + (60.0f / guns[currentGun].FireRate);
+            audioSource.PlayOneShot(guns[currentGun].Sound);
+            if (!guns[currentGun].InfiniteAmmo) {
+                GameManager.Instance.PlayerAmmo[guns[currentGun].ammoType]--;
+            }
         }
 
         if (rb.linearVelocity.magnitude > 0.01f) {
@@ -75,10 +85,19 @@ public class Player : MonoBehaviour
     }
 
     private bool readyToFire() {
-        return gunTimer < Time.time;
+        var ammo = GameManager.Instance.PlayerAmmo[guns[currentGun].ammoType];
+        return gunTimer < Time.time && ammo > 0;
     }
 
     private void selectGun(int gun) {
         currentGun = gun;
+    }
+
+    public void Hurt(float damage) {
+        Health -= damage;
+        Debug.Log("OUCH!");
+        if (Health <= 0.0f) {
+            Debug.Log("DIE DIE DIE !");
+        }
     }
 }

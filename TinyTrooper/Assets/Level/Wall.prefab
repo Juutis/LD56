@@ -48,6 +48,7 @@ MonoBehaviour:
   health: 10
   Hardness: 5
   destroyablePart: {fileID: 6481013364199329243}
+  obstacle: {fileID: 0}
 --- !u!1 &6481013364199329243
 GameObject:
   m_ObjectHideFlags: 0
@@ -60,6 +61,7 @@ GameObject:
   - component: {fileID: 8466181337620936627}
   - component: {fileID: 5013604618446082551}
   - component: {fileID: 5477438491603165461}
+  - component: {fileID: 3347373742452162220}
   m_Layer: 9
   m_Name: Cube
   m_TagString: Untagged
@@ -113,7 +115,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: 209f76290899c5f4aad0bb3248c55f18, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -156,3 +158,19 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!208 &3347373742452162220
+NavMeshObstacle:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6481013364199329243}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Shape: 1
+  m_Extents: {x: 0.5, y: 0.5, z: 0.5}
+  m_MoveThreshold: 0.1
+  m_Carve: 1
+  m_CarveOnlyStationary: 1
+  m_Center: {x: 0, y: 0, z: 0}
+  m_TimeToStationary: 0.5

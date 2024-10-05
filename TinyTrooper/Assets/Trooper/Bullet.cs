@@ -19,7 +19,7 @@ public class Bullet : MonoBehaviour
         rb.isKinematic = false;
         rb.useGravity = false;
         rb.position = transform.position;
-        var additionalComponent = gun.BulletGravity > 0.001f ? Vector3.up : Vector3.zero;
+        var additionalComponent = gun.BulletGravity > 0.001f ? Vector3.up * 0.1f : Vector3.zero;
         rb.linearVelocity = transform.forward * gun.BulletSpeed + additionalComponent;
         penetration = gun.Penetration;
         Invoke("Kill", 10.0f);
@@ -49,10 +49,18 @@ public class Bullet : MonoBehaviour
 
     void ProcessHit(RaycastHit hit) {
         var other = hit.collider;
-        DestroyableObject obj = other.GetComponentInParent<DestroyableObject>();
+        var obj = other.GetComponentInParent<DestroyableObject>();
+        var enemy = other.GetComponentInParent<Enemy>();
+        var player = other.GetComponentInParent<Player>();
         if (obj != null) {
-            obj.Hurt(getDamage());
+            obj.Hurt(getMaterialDamage());
             penetration -= obj.Hardness;
+        } else if (enemy != null) {
+            enemy.Hurt(getDamage());
+            penetration--;
+        } else if (player != null) {
+            player.Hurt(getDamage());
+            penetration--;
         } else {
             penetration = 0;
         }
@@ -63,6 +71,10 @@ public class Bullet : MonoBehaviour
 
     private float getDamage() {
         return gun.Damage * penetration / gun.Penetration;
+    }
+
+    private float getMaterialDamage() {
+        return gun.MaterialDamage * penetration / gun.Penetration;
     }
 
     public void Kill() {
