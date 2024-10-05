@@ -119,6 +119,7 @@ MonoBehaviour:
   bulletPrefab: {fileID: 3906876081071153170, guid: d96dfed8ecbca6b4ea18d0787ce6888c,
     type: 3}
   muzzle: {fileID: 5821145656531381643}
+  patrol: 1
 --- !u!54 &7853203151467365942
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -166,9 +167,9 @@ CapsuleCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 0.3
-  m_Height: 1.0179242
+  m_Height: 1.1420752
   m_Direction: 1
-  m_Center: {x: 0, y: 0.5060585, z: 0}
+  m_Center: {x: 0, y: 0.44398302, z: 0}
 --- !u!1001 &9181501773270913972
 PrefabInstance:
   m_ObjectHideFlags: 0

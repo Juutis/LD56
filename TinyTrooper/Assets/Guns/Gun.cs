@@ -12,6 +12,7 @@ public class Gun : ScriptableObject
     public AudioClip Sound;
     public bool InfiniteAmmo = false;
     public AmmoType ammoType = AmmoType.PISTOL;
+    public float Accuracy = 0;
 }
 
 public enum AmmoType {

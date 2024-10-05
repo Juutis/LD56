@@ -15,9 +15,10 @@ MonoBehaviour:
   BulletSpeed: 50
   BulletGravity: 0
   FireRate: 60
-  Damage: 20
+  Damage: 8
   MaterialDamage: 3
   Penetration: 10
-  Sound: {fileID: 8300000, guid: eb9710ec06bcfd846a74209eacfd33ce, type: 3}
+  Sound: {fileID: 8300000, guid: cd8a7b309133bee409518537946ec44c, type: 3}
   InfiniteAmmo: 0
   ammoType: 2
+  Accuracy: 0

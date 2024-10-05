@@ -28,6 +28,7 @@ public class Player : MonoBehaviour
     public float maxHealth = 100;
 
     private AudioSource audioSource;
+    private bool dead = false;
 
     // Start is called before the first frame update
     void Start()
@@ -41,16 +42,20 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (dead) return;
         var horiz = Input.GetAxis("Horizontal");
         var vert = Input.GetAxis("Vertical");
         input = new Vector2(horiz, vert);
 
         transform.Rotate(Vector3.up, horiz * Time.deltaTime * 720);
+        rb.rotation = transform.rotation;
 
         if(Input.GetKey(KeyCode.C) && readyToFire()) {
+            var moa = guns[currentGun].Accuracy;
+            var inaccuracy = new Vector3(Random.Range(-moa, moa), Random.Range(moa / 10.0f, moa / 10.0f), Random.Range(-moa, moa));
             var bullet = Instantiate(bulletPrefab);
             bullet.transform.position = muzzle.position;
-            bullet.transform.forward = transform.forward;
+            bullet.transform.forward = transform.forward * 10 + inaccuracy;
             bullet.Init(guns[currentGun]);
             gunTimer = Time.time + (60.0f / guns[currentGun].FireRate);
             audioSource.PlayOneShot(guns[currentGun].Sound);
@@ -76,8 +81,39 @@ public class Player : MonoBehaviour
         }
     }
 
+    public bool PickUp(PickupType type) {
+        if (type == PickupType.HEALTH) {
+            if (Health < maxHealth) {
+                Health += 25;
+                if (Health > maxHealth) {
+                    Health = maxHealth;
+                }
+                return true;
+            }
+            return false;
+        }
+        if (type == PickupType.RIFLE_AMMO) {
+            GameManager.Instance.PlayerAmmo[AmmoType.RIFLE] += 20;
+            return true;
+        }
+        if (type == PickupType.SNIPER_AMMO) {
+            GameManager.Instance.PlayerAmmo[AmmoType.SNIPER] += 3;
+            return true;
+        }
+        if (type == PickupType.QUEST) {
+            GameManager.Instance.QuestItemsFound++;
+            return true;
+        }
+        return false;
+    }
+
     void FixedUpdate()
     {
+        if (dead)
+        {
+            rb.linearVelocity = Vector3.zero;
+            return;
+        }
         rb.AddForce(transform.forward * input.y * 100.0f, ForceMode.Acceleration);
         if (rb.linearVelocity.magnitude > MAX_SPEED) {
             rb.linearVelocity = rb.linearVelocity.normalized * MAX_SPEED;
@@ -95,9 +131,9 @@ public class Player : MonoBehaviour
 
     public void Hurt(float damage) {
         Health -= damage;
-        Debug.Log("OUCH!");
         if (Health <= 0.0f) {
-            Debug.Log("DIE DIE DIE !");
+            anim.SetBool("dead", true);
+            dead = true;
         }
     }
 }

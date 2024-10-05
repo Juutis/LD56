@@ -44,6 +44,19 @@ public class Enemy : MonoBehaviour
     [SerializeField]
     private Transform muzzle;
 
+    private Vector3 spawnPoint;
+
+    [SerializeField]
+    private bool patrol = true;
+
+    [SerializeField]
+    private bool followPlayer = true;
+    [SerializeField]
+    private bool shootBursts = false;
+    private int burstCounter = 0;
+
+    private Vector3 initialForward;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -55,6 +68,16 @@ public class Enemy : MonoBehaviour
         trooper = anim.gameObject;
         player = GameObject.FindWithTag("Player");
         lookForPlayerMask = LayerMask.GetMask("Player", "Wall", "Default");
+        spawnPoint = transform.position;
+        if (patrol) {
+            state = EnemyState.PATROL;
+            RandomizePatrol();
+        }
+        if (!followPlayer) {
+            DisableNavigation();
+        }
+        initialForward = transform.forward;
+        burstCounter = Random.Range(3, 6);
     }
 
     // Update is called once per frame
@@ -62,9 +85,28 @@ public class Enemy : MonoBehaviour
     {
         handlePlayerVisibility();
 
-        var targetDir = rb.linearVelocity.normalized;
+        var targetDir = Vector3.zero;
+        if ((patrol || followPlayer) && rb.linearVelocity.magnitude > 0.1f) {
+            targetDir = rb.linearVelocity;
+        }
+        if (targetDir.magnitude < 0.1f) {
+            if (state == EnemyState.ATTACK) {
+                var dirToPlayer = player.transform.position - transform.position;
+                var angleToPlayer = Vector3.SignedAngle(initialForward, dirToPlayer, Vector3.up);
+                if (followPlayer) {
+                    targetDir = dirToPlayer;
+                } else {
+                    if (angleToPlayer > -60f && angleToPlayer < 60f) {
+                        targetDir = dirToPlayer;
+                    } else {
+                        targetDir = Quaternion.AngleAxis(Mathf.Sign(angleToPlayer) * 60f, Vector3.up) * initialForward;
+                    }
+                }
+            }
+        }
+
         targetDir.y = 0.0f;
-        if (targetDir.magnitude > 0.5f) {
+        if (targetDir.magnitude > 0.1f) {
             var targetRotation = Quaternion.LookRotation(targetDir, Vector3.up);
             transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, Time.deltaTime * turnSpeed);
         }
@@ -88,7 +130,7 @@ public class Enemy : MonoBehaviour
         var angle = Vector3.Angle(transform.forward, playerDir);
         if (angle < 60 || playerDir.magnitude < 1.5f) {
             RaycastHit hit;
-            if (Physics.Raycast(transform.position + Vector3.up * 0.5f, playerDir, out hit, 5.0f, lookForPlayerMask)) {
+            if (Physics.Raycast(transform.position + Vector3.up * 0.75f, playerDir, out hit, 5.0f, lookForPlayerMask)) {
                 if (hit.rigidbody != null && hit.rigidbody.gameObject == player) {
                     visibility = 10.0f;
                 }
@@ -108,25 +150,49 @@ public class Enemy : MonoBehaviour
     }
 
     public void handlePatrol() {
-        
+        moveSpeed = 2.0f;
+        if (playerVisibility >= 1.0f) {
+            state = EnemyState.ATTACK;
+        }
+    }
+
+    public void RandomizePatrol() {
+        if (state != EnemyState.PATROL) return;
+        var randomPoint = Random.insideUnitCircle;
+        var offset = new Vector3(randomPoint.x, spawnPoint.y, randomPoint.y);
+        navigationTarget.position = spawnPoint + offset * 10.0f;
+        Invoke("RandomizePatrol", Random.Range(3.0f, 6.0f));
     }
 
     public void handleAttack() {
-        navigationTarget = player.transform;
+        moveSpeed = 4.0f;
+        if (followPlayer) {
+            navigationTarget = player.transform;
+        }
         targetRange = 3.0f;
 
-        if (playerVisibility >= 1.0f) {
+        var angleToPlayer = Vector3.Angle(transform.forward, player.transform.position - transform.position);
+        if (playerVisibility >= 1.0f && angleToPlayer < 15.0f) {
             shoot();
         }
     }
 
     private void shoot() {
         if (shootTimer <= Time.time) {
-            shootTimer = Time.time + 60.0f / gun.FireRate;
+            var fireRate = shootBursts ? gun.FireRate : Random.Range(gun.FireRate * 0.8f, gun.FireRate);
+            shootTimer = Time.time + 60.0f / fireRate;
             var bullet = Instantiate(bulletPrefab);
             bullet.transform.position = muzzle.position;
-            bullet.transform.forward = transform.forward;
+            var inaccuracy = new Vector3(Random.Range(-1.0f, 1.0f), Random.Range(-0.5f, 0.5f), Random.Range(-1.0f, 1.0f));
+            bullet.transform.forward = transform.forward * 10 + inaccuracy;
             bullet.Init(gun);
+            if (shootBursts) {
+                burstCounter--;
+                if (burstCounter <= 0) {
+                    shootTimer = Time.time + Random.Range(0.5f, 1.0f);
+                    burstCounter = Random.Range(3, 6);
+                }
+            }
         }
     }
 
