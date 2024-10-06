@@ -110,7 +110,7 @@ public class GameManager : MonoBehaviour
     public void Die() {
         if (win) return;
         lose = true;
-        Invoke("Lose", 3.0f);
+        Invoke("Lose", 1.5f);
     }
 
     public void Lose() {

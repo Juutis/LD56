@@ -175,6 +175,7 @@ public class Player : MonoBehaviour
 
     public void Hurt(float damage) {
         Health -= damage;
+        ScreenShake.Instance.Shake();
         if (Health <= 0.0f) {
             anim.SetBool("dead", true);
             dead = true;

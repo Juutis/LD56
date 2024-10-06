@@ -51,6 +51,10 @@ MonoBehaviour:
   mask:
     serializedVersion: 2
     m_Bits: 0
+  trooperHitPrefab: {fileID: 724406932728597890, guid: 527419fd8ac06384d8b70de2ef83187a,
+    type: 3}
+  hitPrefab: {fileID: 724406932728597890, guid: eb76e277b20ec164b85c23d05f8b79a7,
+    type: 3}
 --- !u!54 &8551868162220394631
 Rigidbody:
   m_ObjectHideFlags: 0

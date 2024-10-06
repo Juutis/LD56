@@ -17,7 +17,7 @@ MonoBehaviour:
   FireRate: 600
   Damage: 1
   MaterialDamage: 1
-  Penetration: 3
+  Penetration: 1
   Sound: {fileID: 8300000, guid: eb9710ec06bcfd846a74209eacfd33ce, type: 3}
   EmptySound: {fileID: 8300000, guid: ebb924cb48152b34cb37c13b40167c69, type: 3}
   InfiniteAmmo: 0

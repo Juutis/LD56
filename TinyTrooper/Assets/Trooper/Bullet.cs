@@ -16,6 +16,12 @@ public class Bullet : MonoBehaviour
 
     private AudioSource audioSource;
 
+    [SerializeField]
+    private GameObject trooperHitPrefab;
+
+    [SerializeField]
+    private GameObject hitPrefab;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -67,14 +73,20 @@ public class Bullet : MonoBehaviour
         if (obj != null) {
             obj.Hurt(getMaterialDamage());
             penetration -= obj.Hardness;
+            var fx = Instantiate(hitPrefab);
+            fx.transform.position = hit.point;
         } else if (enemy != null) {
             enemy.Hurt(getDamage());
             penetration--;
+            var fx = Instantiate(trooperHitPrefab);
+            fx.transform.position = hit.point;
         } else if (player != null) {
             player.Hurt(getDamage());
             penetration--;
         } else {
             penetration = 0;
+            var fx = Instantiate(hitPrefab);
+            fx.transform.position = hit.point;
         }
         if (penetration <= 0) {
             dead = true;

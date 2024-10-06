@@ -14,5 +14,8 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/day3.unity
     guid: 249e9d74177ea144f9cac265ad84519d
+  - enabled: 1
+    path: Assets/Scenes/theend.unity
+    guid: 1c95bf2efef8378429b8ba6b9760d943
   m_configObjects: {}
   m_UseUCBPForAssetBundles: 0
