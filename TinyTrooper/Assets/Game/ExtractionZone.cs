@@ -15,6 +15,7 @@ public class ExtractionZone : MonoBehaviour
     }
 
     void OnTriggerEnter(Collider other) {
+        if (Time.timeSinceLevelLoad < 1.0f) return;
         if (other.gameObject.tag == "Player")
         {
             if (GameManager.Instance.ReadyToExtract()) {

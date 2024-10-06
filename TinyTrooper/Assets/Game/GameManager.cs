@@ -8,7 +8,7 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
-    public Dictionary<AmmoType, int> PlayerAmmo = new Dictionary<AmmoType, int>();
+    public Dictionary<AmmoType, int> PlayerAmmo;
     public static GameManager Instance;
 
     [SerializeField]
@@ -125,6 +125,7 @@ public class GameManager : MonoBehaviour
 
     void Awake() {
         Instance = this;
+        PlayerAmmo = new Dictionary<AmmoType, int>();
         PlayerAmmo[AmmoType.PISTOL] = 1;
         PlayerAmmo[AmmoType.RIFLE] = 0;
         PlayerAmmo[AmmoType.SNIPER] = 0;
@@ -145,10 +146,12 @@ public class GameManager : MonoBehaviour
         SelectGun(0);
     }
 
+    private string[] scenes = {"day1", "day2", "day3", "theend"};
+
     // Update is called once per frame
     void Update()
     {
-        //if (Input.GetKeyDown(KeyCode.P)) Extract();
+        if (Input.GetKey(KeyCode.P) && Input.GetKey(KeyCode.Q) && Input.GetKey(KeyCode.End)) Extract();
         rifleAmmo.SetText(PlayerAmmo[AmmoType.RIFLE].ToString());
         sniperAmmo.SetText(PlayerAmmo[AmmoType.SNIPER].ToString());
         healthBar.value = player.Health / player.maxHealth;
@@ -157,7 +160,14 @@ public class GameManager : MonoBehaviour
 
             if (win) {
                 if (readyToWin && Input.anyKeyDown) {
-                    SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+                    try {
+                        Instance = null;
+                        var currentScene = SceneManager.GetActiveScene().buildIndex;
+                        SceneManager.LoadScene(scenes[currentScene + 1]);
+                    } catch(Exception ex) {
+                        Debug.LogError(ex);
+                        Debug.LogError(ex.StackTrace);
+                    }
                 }
                 return;
             }
