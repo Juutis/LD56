@@ -19,6 +19,7 @@ MonoBehaviour:
   MaterialDamage: 3
   Penetration: 10
   Sound: {fileID: 8300000, guid: cd8a7b309133bee409518537946ec44c, type: 3}
+  EmptySound: {fileID: 8300000, guid: ebb924cb48152b34cb37c13b40167c69, type: 3}
   InfiniteAmmo: 0
   ammoType: 2
   Accuracy: 0

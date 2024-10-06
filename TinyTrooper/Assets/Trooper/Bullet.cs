@@ -12,6 +12,10 @@ public class Bullet : MonoBehaviour
     [SerializeField]
     private LayerMask mask;
 
+    private bool dead = false;
+
+    private AudioSource audioSource;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -23,6 +27,7 @@ public class Bullet : MonoBehaviour
         rb.linearVelocity = transform.forward * gun.BulletSpeed + additionalComponent;
         penetration = gun.Penetration;
         Invoke("Kill", 10.0f);
+        audioSource = GetComponent<AudioSource>();
     }
 
     public void Init(Gun gun) {
@@ -32,8 +37,10 @@ public class Bullet : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (dead) return;
         if (transform.position.y < -1.0f) {
-            Kill();
+            dead = true;
+            Invoke("Kill", 0.1f);
         }
 
         var result = Physics.RaycastAll(transform.position, rb.linearVelocity, rb.linearVelocity.magnitude * Time.deltaTime, mask);
@@ -44,10 +51,15 @@ public class Bullet : MonoBehaviour
     }
 
     void FixedUpdate() {
+        if (dead) {
+            rb.linearVelocity = Vector3.zero;
+            return;
+        }
         rb.AddForce(Physics.gravity * gun.BulletGravity, ForceMode.Acceleration);
     }
 
     void ProcessHit(RaycastHit hit) {
+        audioSource.PlayOneShot(audioSource.clip);
         var other = hit.collider;
         var obj = other.GetComponentInParent<DestroyableObject>();
         var enemy = other.GetComponentInParent<Enemy>();
@@ -65,7 +77,8 @@ public class Bullet : MonoBehaviour
             penetration = 0;
         }
         if (penetration <= 0) {
-            Kill();
+            dead = true;
+            Invoke("Kill", 0.1f);
         }
     }
 

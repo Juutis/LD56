@@ -12,6 +12,10 @@ public class DestroyableObject : MonoBehaviour
     [SerializeField]
     private GameObject destroyablePart;
 
+
+    [SerializeField]
+    private GameObject fx;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -28,6 +32,9 @@ public class DestroyableObject : MonoBehaviour
         health -= damage;
         if (health < 0) {
             Destroy(destroyablePart);
+            if (fx != null) {
+                fx.SetActive(true);
+            }
         }
     }
 }

@@ -21,6 +21,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 573371716645805190, guid: 26cbc8acd926308488a43c1f679ef2d4,
         type: 3}
+      propertyPath: dieEffect
+      value: 
+      objectReference: {fileID: 6710027537742986613, guid: 17ceb729a3f8a5f4b825e5f3d8c58447,
+        type: 3}
+    - target: {fileID: 573371716645805190, guid: 26cbc8acd926308488a43c1f679ef2d4,
+        type: 3}
       propertyPath: shootBursts
       value: 1
       objectReference: {fileID: 0}
@@ -95,6 +101,11 @@ PrefabInstance:
       propertyPath: m_IsKinematic
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 7997543843883927424, guid: 26cbc8acd926308488a43c1f679ef2d4,
+        type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: a611e87b710825142968054d14b62bd6, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

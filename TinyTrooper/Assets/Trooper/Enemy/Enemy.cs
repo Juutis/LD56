@@ -57,9 +57,21 @@ public class Enemy : MonoBehaviour
 
     private Vector3 initialForward;
 
+    private AudioSource audioSource;
+
+    [SerializeField]
+    private bool isObjective;
+
+    [SerializeField]
+    private GameObject minimapIcon;
+
+    [SerializeField]
+    private GameObject ingameIcon;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        audioSource = GetComponent<AudioSource>();
         rb = GetComponent<Rigidbody>();
         anim = GetComponentInChildren<Animator>();
         EnableNavigation();
@@ -78,11 +90,19 @@ public class Enemy : MonoBehaviour
         }
         initialForward = transform.forward;
         burstCounter = Random.Range(3, 6);
+
+        if (isObjective) {
+            GameManager.Instance.QuestEnemiesTotal++;
+            minimapIcon.SetActive(true);
+            ingameIcon.SetActive(true);
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (GameManager.Instance.BriefingActive) return;
+
         handlePlayerVisibility();
 
         var targetDir = Vector3.zero;
@@ -128,9 +148,9 @@ public class Enemy : MonoBehaviour
         float visibility = 0.0f;
         var playerDir = player.transform.position - transform.position;
         var angle = Vector3.Angle(transform.forward, playerDir);
-        if (angle < 60 || playerDir.magnitude < 1.5f) {
+        if (angle < 75 || playerDir.magnitude < 1.5f) {
             RaycastHit hit;
-            if (Physics.Raycast(transform.position + Vector3.up * 0.75f, playerDir, out hit, 5.0f, lookForPlayerMask)) {
+            if (Physics.Raycast(transform.position + Vector3.up * 0.75f, playerDir, out hit, 6.0f, lookForPlayerMask)) {
                 if (hit.rigidbody != null && hit.rigidbody.gameObject == player) {
                     visibility = 10.0f;
                 }
@@ -186,6 +206,7 @@ public class Enemy : MonoBehaviour
             var inaccuracy = new Vector3(Random.Range(-1.0f, 1.0f), Random.Range(-0.5f, 0.5f), Random.Range(-1.0f, 1.0f));
             bullet.transform.forward = transform.forward * 10 + inaccuracy;
             bullet.Init(gun);
+            audioSource.PlayOneShot(gun.Sound);
             if (shootBursts) {
                 burstCounter--;
                 if (burstCounter <= 0) {
@@ -206,6 +227,10 @@ public class Enemy : MonoBehaviour
 
     public void Die() {
         if (dead) return;
+        if (isObjective) {
+            GameManager.Instance.QuestEnemiesKilled++;
+            player.GetComponent<Player>().ObjectiveCompleted();
+        }
         DisableNavigation();
         var fx = Instantiate(dieEffect);
         fx.transform.parent = null;
@@ -216,8 +241,17 @@ public class Enemy : MonoBehaviour
 
     void FixedUpdate()
     {
+        if (rb.linearVelocity.magnitude > 0.1f) {
+            anim.SetBool("run", true);
+        } else {
+            anim.SetBool("run", false);
+        }
+
+        if (GameManager.Instance.BriefingActive) return;
+
         if (!navigationActive)
         {
+            anim.SetBool("run", false);
             return;
         }
 
@@ -233,11 +267,7 @@ public class Enemy : MonoBehaviour
             rb.linearVelocity = Vector3.zero;
         }
 
-        if (rb.linearVelocity.magnitude > 0.1f) {
-            anim.SetBool("run", true);
-        } else {
-            anim.SetBool("run", false);
-        }
+
     }
 
     public float GetDistanceToTarget()
@@ -326,6 +356,7 @@ public class Enemy : MonoBehaviour
 
     private bool isFinalWaypoint()
     {
+        if (path == null) return true;
         return waypointIndex == path.corners.Length - 1;
     }
 

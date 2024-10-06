@@ -10,6 +10,7 @@ public class Gun : ScriptableObject
     public float MaterialDamage = 1;
     public int Penetration = 2;
     public AudioClip Sound;
+    public AudioClip EmptySound;
     public bool InfiniteAmmo = false;
     public AmmoType ammoType = AmmoType.PISTOL;
     public float Accuracy = 0;
