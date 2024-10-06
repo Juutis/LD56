@@ -148,6 +148,7 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        //if (Input.GetKeyDown(KeyCode.P)) Extract();
         rifleAmmo.SetText(PlayerAmmo[AmmoType.RIFLE].ToString());
         sniperAmmo.SetText(PlayerAmmo[AmmoType.SNIPER].ToString());
         healthBar.value = player.Health / player.maxHealth;
