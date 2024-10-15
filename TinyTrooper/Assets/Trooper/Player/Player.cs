@@ -16,6 +16,9 @@ public class Player : MonoBehaviour
     [SerializeField]
     private Transform muzzle;
 
+    [SerializeField]
+    private Transform crosshair;
+
     private int currentGun;
     
     [SerializeField]
@@ -24,8 +27,8 @@ public class Player : MonoBehaviour
     private float gunTimer = 0;
     private Animator anim;
 
-    public float Health = 100;
-    public float maxHealth = 100;
+    public float Health = 50;
+    public float maxHealth = 50;
 
     [SerializeField]
     private AudioSource gunSounds;
@@ -44,6 +47,11 @@ public class Player : MonoBehaviour
     private AudioClip objective;
 
     private bool clickPlayed = false;
+
+    private Camera camera;
+    private Plane yZero;
+
+    private Vector3 mouseInWorld;
     
 
     // Start is called before the first frame update
@@ -52,6 +60,11 @@ public class Player : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         anim = GetComponentInChildren<Animator>();
         currentGun = 0;
+        camera = GameObject.FindGameObjectWithTag("ActualCamera").GetComponent<Camera>();
+        yZero = new Plane(Vector3.up, Vector3.up * 1.0f);
+        crosshair.parent = null;
+        Cursor.lockState = CursorLockMode.Confined;
+        Cursor.visible = false;
     }
 
     // Update is called once per frame
@@ -64,16 +77,30 @@ public class Player : MonoBehaviour
         var vert = Input.GetAxis("Vertical");
         input = new Vector2(horiz, vert);
 
-        transform.Rotate(Vector3.up, horiz * Time.deltaTime * 720);
-        rb.rotation = transform.rotation;
+        var mouseOnScreen = Input.mousePosition;
+        mouseOnScreen -= new Vector3(Screen.width / 2.0f, Screen.height / 2.0f, 0.0f);
+        var scaling = Screen.height / 360.0f;
+        mouseOnScreen = mouseOnScreen / scaling;
+        mouseOnScreen += new Vector3(180.0f, 180.0f, 0.0f);
+        var ray = camera.ScreenPointToRay(mouseOnScreen);
+        float enter;
+        yZero.Raycast(ray, out enter);
+        mouseInWorld = ray.GetPoint(enter);
 
-        if(Input.GetKey(KeyCode.X) || Input.GetKey(KeyCode.Comma)) {
+        var targetDir = mouseInWorld - transform.position;
+        var angleDiff = Vector3.SignedAngle(transform.forward, targetDir, Vector3.up);
+        var rotateAmount = Mathf.Clamp(angleDiff, -Time.deltaTime * 720, Time.deltaTime * 720);
+        transform.Rotate(Vector3.up, rotateAmount);
+        rb.rotation = transform.rotation;
+        crosshair.position = mouseInWorld;
+
+        if(Input.GetKey(KeyCode.Mouse0)) {
             if (readyToFire()) {
                 var moa = guns[currentGun].Accuracy;
                 var inaccuracy = new Vector3(Random.Range(-moa, moa), Random.Range(moa / 10.0f, moa / 10.0f), Random.Range(-moa, moa));
                 var bullet = Instantiate(bulletPrefab);
                 bullet.transform.position = muzzle.position;
-                bullet.transform.forward = transform.forward * 10 + inaccuracy;
+                bullet.transform.forward = (mouseInWorld - muzzle.position).normalized * 10 + inaccuracy;
                 bullet.Init(guns[currentGun]);
                 gunTimer = Time.time + (60.0f / guns[currentGun].FireRate);
                 gunSounds.PlayOneShot(guns[currentGun].Sound);
@@ -155,7 +182,12 @@ public class Player : MonoBehaviour
             rb.linearVelocity = Vector3.zero;
             return;
         }
-        rb.AddForce(transform.forward * input.y * 100.0f, ForceMode.Acceleration);
+        var up = camera.transform.forward;
+        up.y = 0;
+        var right = camera.transform.right;
+        right.y = 0;
+        var force = up.normalized * input.y + right.normalized * input.x;
+        rb.AddForce(force * 100.0f, ForceMode.Acceleration);
         if (rb.linearVelocity.magnitude > MAX_SPEED) {
             rb.linearVelocity = rb.linearVelocity.normalized * MAX_SPEED;
         }

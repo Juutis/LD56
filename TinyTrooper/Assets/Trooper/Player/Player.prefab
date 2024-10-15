@@ -297,7 +297,7 @@ Transform:
   m_GameObject: {fileID: 7343819792755837080}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.074, y: 0.777, z: 0.585}
+  m_LocalPosition: {x: 0.074, y: 0.777, z: 0.366}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -360,6 +360,7 @@ MonoBehaviour:
   bulletPrefab: {fileID: 6507143131362772842, guid: f412123ebf6a99a499411f0c47aefb68,
     type: 3}
   muzzle: {fileID: 334351616367611155}
+  crosshair: {fileID: 1785397253245664166}
   guns:
   - {fileID: 11400000, guid: d580132e4a0ade349ad6fbfbee0b5ca2, type: 2}
   - {fileID: 11400000, guid: 396247aeb3cb0b042a2d14569a725e4f, type: 2}
@@ -539,9 +540,9 @@ CapsuleCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 0.1
-  m_Height: 1.047905
+  m_Height: 0.8391857
   m_Direction: 2
-  m_Center: {x: 0, y: 0.72, z: 0.1439525}
+  m_Center: {x: 0, y: 0.72, z: 0.18225265}
 --- !u!82 &1999896543000787280
 AudioSource:
   m_ObjectHideFlags: 0

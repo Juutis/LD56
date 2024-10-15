@@ -22,4 +22,4 @@ MonoBehaviour:
   EmptySound: {fileID: 8300000, guid: ebb924cb48152b34cb37c13b40167c69, type: 3}
   InfiniteAmmo: 1
   ammoType: 0
-  Accuracy: 0.1
+  Accuracy: 0
